@@ -13,23 +13,34 @@ import com.badlogic.gdx.math.Vector3;
 import java.util.ArrayList;
 
 public class Circle {
-    private static final Mesh CIRCLE_MESH = buildCircleMesh(200);
+    private static final Mesh CIRCLE_MESH = buildCircleMesh(2000);
     public Vector3 position;
     public Vector2 size;
     public Color color;
 
     public Circle() {
         position = new Vector3(0,0,0);
+        size = new Vector2(100, 100);
         color = Color.BLUE;
     }
 
     public void render(Matrix4 origin, ShaderProgram shader) {
         /* NOTE: Assumes shader is already bound */
-        Matrix4 matrix4 = origin.cpy();
-        matrix4.translate(position);
+        Matrix4 matrix4 = getMatrix(origin);
         shader.setUniformMatrix("u_projModelView", matrix4);
         shader.setUniform4fv("u_color", new float[]{color.r, color.g, color.b, color.a}, 0, 4);
         CIRCLE_MESH.render(shader, GL20.GL_TRIANGLES);
+    }
+
+    private Matrix4 getMatrix(Matrix4 origin) {
+        Matrix4 matrix4 = origin.cpy();
+        matrix4.translate(position);
+        int maxWidth = Gdx.graphics.getWidth();
+        int maxHeight = Gdx.graphics.getHeight();
+        float percentageWidth = size.x / maxWidth;
+        float percentageHeight = size.y / maxHeight;
+        matrix4.setToScaling(percentageWidth, percentageHeight, 1);
+        return matrix4;
     }
 
     private static Mesh buildCircleMesh(int vCount) {
@@ -64,10 +75,6 @@ public class Circle {
             verts[i+2] = vert.z;
         }
 
-        System.out.println("verts.length = " + verts.length);
-        for (Vector3 vert : vertices) {
-            System.out.println(vert.toString());
-        }
         Mesh circle = new Mesh(true, vCount, indices.length, VertexAttribute.Position());
         circle.setVertices(verts);
         circle.setIndices(indices);

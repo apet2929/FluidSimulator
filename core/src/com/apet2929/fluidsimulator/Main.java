@@ -33,7 +33,7 @@ public class Main  extends ApplicationAdapter {
 
 		mousePos = new Vector2(0,0);
 		circle = new Circle();
-		sb.getTransformMatrix().setToScaling(SCALE,SCALE,1);
+		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1);
 	}
 
 	private ShaderProgram loadShader(String name) {
@@ -52,7 +52,7 @@ public class Main  extends ApplicationAdapter {
 	public void render() {
 		ScreenUtils.clear(1,1,1,1);
 		basicShader.bind();
-		circle.render(sb.getTransformMatrix(), basicShader);
+		circle.render(sb.getProjectionMatrix(), basicShader);
 
 	}
 
