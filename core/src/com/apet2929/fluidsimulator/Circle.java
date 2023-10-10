@@ -24,6 +24,12 @@ public class Circle {
         color = Color.BLUE;
     }
 
+    public Circle(Vector3 position, Vector2 size, Color color) {
+        this.position = position;
+        this.size = size;
+        this.color = color;
+    }
+
     public void render(Matrix4 origin, ShaderProgram shader) {
         /* NOTE: Assumes shader is already bound */
         Matrix4 matrix4 = getMatrix(origin);
@@ -34,13 +40,13 @@ public class Circle {
 
     private Matrix4 getMatrix(Matrix4 origin) {
         Matrix4 matrix4 = origin.cpy();
-        matrix4.translate(position);
+
         int maxWidth = Gdx.graphics.getWidth();
         int maxHeight = Gdx.graphics.getHeight();
         float percentageWidth = size.x / maxWidth;
         float percentageHeight = size.y / maxHeight;
-        matrix4.setToScaling(percentageWidth, percentageHeight, 1);
-        return matrix4;
+        Vector3 scaling = new Vector3(percentageWidth, percentageHeight, 1);
+        return matrix4.setToTranslationAndScaling(position, scaling);
     }
 
     private static Mesh buildCircleMesh(int vCount) {

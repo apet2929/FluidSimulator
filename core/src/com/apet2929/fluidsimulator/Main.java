@@ -21,7 +21,7 @@ public class Main  extends ApplicationAdapter {
 	ShaderProgram basicShader;
 
 	Vector2 mousePos;
-	Circle circle;
+	ArrayList<Particle> particles;
 
 
 
@@ -32,7 +32,12 @@ public class Main  extends ApplicationAdapter {
 		img = new Texture(Gdx.files.internal("badlogic.jpg"));
 
 		mousePos = new Vector2(0,0);
-		circle = new Circle();
+		particles = new ArrayList<>();
+		particles.add(new Particle());
+		particles.add(new Particle());
+		particles.add(new Particle());
+		particles.get(0).position.x += 0.4;
+		particles.get(1).position.x -= 0.4;
 		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1);
 	}
 
@@ -48,12 +53,21 @@ public class Main  extends ApplicationAdapter {
 		return shader;
 	}
 
+	public void update() {
+		for (Particle particle : particles) {
+			particle.update();
+		}
+	}
+
 	@Override
 	public void render() {
+		update();
+
 		ScreenUtils.clear(1,1,1,1);
 		basicShader.bind();
-		circle.render(sb.getProjectionMatrix(), basicShader);
-
+		for (Particle particle : particles) {
+			particle.render(sb.getProjectionMatrix(), basicShader);
+		}
 	}
 
 	@Override
