@@ -32,4 +32,24 @@ public abstract class Renderable {
         Vector3 scaling = new Vector3(percentageWidth, percentageHeight, 1);
         return matrix4.setToTranslationAndScaling(position, scaling);
     }
+
+    public static float pixelsToUV(float pixels, boolean widthRelative) {
+        if(widthRelative) {
+            return ((pixels / Gdx.graphics.getWidth()) * 2) - 1;
+        } else {
+            return ((pixels / Gdx.graphics.getHeight()) * 2) - 1;
+        }
+    }
+
+    public static Vector2 pixelsToUV(float x, float y) {
+        float uvX = ((x / Gdx.graphics.getWidth()) * 2) - 1;
+        float uvY = ((y / Gdx.graphics.getHeight()) * 2) - 1;
+        return new Vector2(uvX, uvY);
+    }
+
+    public static float uvToPixels(float uv, boolean widthRelative) {
+        float uvNorm = (uv + 1) / 2;
+        if(widthRelative) return uvNorm * Gdx.graphics.getWidth();
+        return uvNorm * Gdx.graphics.getHeight();
+    }
 }

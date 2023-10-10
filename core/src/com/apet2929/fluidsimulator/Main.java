@@ -2,14 +2,10 @@ package com.apet2929.fluidsimulator;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
@@ -29,14 +25,25 @@ public class Main  extends ApplicationAdapter {
 		sr = new ShapeRenderer();
 		basicShader = loadShader("shader");
 		particles = new ArrayList<>();
-		particles.add(new Particle());
-		particles.add(new Particle());
-		particles.add(new Particle());
-		particles.get(0).position.x += 0.4;
-		particles.get(1).position.x -= 0.4;
-		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1);
+		spawnParticles(20);
+		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1); // IMPORTANT: DONT REMOVE
 
 		boundingBox = new Square(Particle.getWorldBounds());
+	}
+
+	private void spawnParticles(int numParticles) {
+		float particleSpacing = 10;
+		float particleSize = Particle.PARTICLE_RADIUS;
+		int particlesPerRow = (int) Math.sqrt(numParticles);
+		int particlesPerCol = (numParticles - 1) / particlesPerRow + 1;
+		float spacing = particleSize * 2 + particleSpacing;
+		for (int i = 0; i < numParticles; i++) {
+			float x = ((i % particlesPerRow) - (particlesPerRow / 2f) + 0.5f) * spacing;
+			float y = ((i / particlesPerRow) - (particlesPerCol / 2f) + 0.5f) * spacing;
+			x += Gdx.graphics.getWidth() / 2f;
+			y += Gdx.graphics.getHeight() / 2f;
+			particles.add(new Particle(new Vector2(x, y)));
+		}
 	}
 
 	private ShaderProgram loadShader(String name) {

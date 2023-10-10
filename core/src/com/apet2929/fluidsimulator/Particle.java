@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Particle extends Renderable {
     public static final float MARGIN_X = 0.1f;
     public static final float MARGIN_Y = 0.05f;
+    public static float PARTICLE_RADIUS = 25;
     private static final float GRAVITY = 0.02f;
     private static final float COLLISION_DAMPENING = 0.9f;
 
@@ -18,22 +19,26 @@ public class Particle extends Renderable {
     float radius;
 
     public Particle() {
-        velocity = new Vector2(0,0);
-        this.position = new Vector3(0,0,0);
-        this.color = Color.RED;
-        radius = 25;
-        Vector2 size = new Vector2(radius * 2, radius * 2);
-        circle = new Circle(position, size, color);
-        velocity.x = -0.2f;
+        this(new Vector2(0,0));
     }
 
-    public Particle(Vector3 position, Color color) {
+    public Particle(Vector2 position) {
         velocity = new Vector2(0,0);
-        this.position = position;
-        this.color = color;
-        radius = 50;
-        Vector2 size = new Vector2(radius * 2, radius * 2);
-        circle = new Circle(position, size, color);
+        this.position = new Vector3(Renderable.pixelsToUV(position.x, position.y), 0);
+        this.color = Color.BLUE;
+
+        Vector2 size = new Vector2(PARTICLE_RADIUS * 2, PARTICLE_RADIUS * 2);
+        circle = new Circle(this.position, size, color);
+    }
+
+    public Particle fromUV(Vector2 positionUV) {
+        velocity = new Vector2(0,0);
+        this.position = new Vector3(positionUV, 0);
+        this.color = Color.BLUE;
+
+        Vector2 size = new Vector2(PARTICLE_RADIUS * 2, PARTICLE_RADIUS * 2);
+        circle = new Circle(this.position, size, color);
+        return this;
     }
 
     public void update() {
@@ -62,19 +67,7 @@ public class Particle extends Renderable {
         }
     }
 
-    private float pixelsToUV(float pixels, boolean widthRelative) {
-        if(widthRelative) {
-            return ((pixels / Gdx.graphics.getWidth()) * 2) - 1;
-        } else {
-            return ((pixels / Gdx.graphics.getHeight()) * 2) - 1;
-        }
-    }
 
-    private float uvToPixels(float uv, boolean widthRelative) {
-        float uvNorm = (uv + 1) / 2;
-        if(widthRelative) return uvNorm * Gdx.graphics.getWidth();
-        return uvNorm * Gdx.graphics.getHeight();
-    }
 
     public static Vector2 getWorldBounds(){
         float width = 1 - (Particle.MARGIN_X * 2);
