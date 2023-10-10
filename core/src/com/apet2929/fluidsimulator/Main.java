@@ -17,21 +17,17 @@ import java.util.ArrayList;
 public class Main  extends ApplicationAdapter {
 	private static final float SCALE = 1f;
 	SpriteBatch sb;
-	Texture img;
 	ShaderProgram basicShader;
-
-	Vector2 mousePos;
 	ArrayList<Particle> particles;
+	Square boundingBox;
 
-
+	ShapeRenderer sr;
 
 	@Override
 	public void create() {
 		sb = new SpriteBatch();
+		sr = new ShapeRenderer();
 		basicShader = loadShader("shader");
-		img = new Texture(Gdx.files.internal("badlogic.jpg"));
-
-		mousePos = new Vector2(0,0);
 		particles = new ArrayList<>();
 		particles.add(new Particle());
 		particles.add(new Particle());
@@ -39,6 +35,7 @@ public class Main  extends ApplicationAdapter {
 		particles.get(0).position.x += 0.4;
 		particles.get(1).position.x -= 0.4;
 		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1);
+		boundingBox = new Square();
 	}
 
 	private ShaderProgram loadShader(String name) {
@@ -68,6 +65,7 @@ public class Main  extends ApplicationAdapter {
 		for (Particle particle : particles) {
 			particle.render(sb.getProjectionMatrix(), basicShader);
 		}
+		boundingBox.render(sb.getProjectionMatrix(), basicShader);
 	}
 
 	@Override

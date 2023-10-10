@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import java.util.ArrayList;
 
-public class Circle {
+public class Circle implements Renderable {
     private static final Mesh CIRCLE_MESH = buildCircleMesh(2000);
     public Vector3 position;
     public Vector2 size;
