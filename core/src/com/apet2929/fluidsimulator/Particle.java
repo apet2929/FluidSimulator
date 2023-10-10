@@ -16,7 +16,6 @@ public class Particle extends Renderable {
 
     Vector2 velocity;
     Circle circle;
-    float radius;
 
     public Particle() {
         this(new Vector2(0,0));
@@ -54,20 +53,18 @@ public class Particle extends Renderable {
     }
 
     private void resolveCollisions() {
-        float uvRadius = pixelsToUV(radius, false) + 1;
-        if(Math.abs(position.y) > 1 - uvRadius - (MARGIN_Y * 2)) {
+        Vector2 uvRadius = pixelsToUV(PARTICLE_RADIUS, PARTICLE_RADIUS).add(1, 1);
+
+        if(Math.abs(position.y) > 1 - uvRadius.y - (MARGIN_Y * 2)) {
             velocity.y *= -1 * COLLISION_DAMPENING;
-            position.y = Math.signum(position.y) * (1 - uvRadius - (MARGIN_Y * 2));
+            position.y = Math.signum(position.y) * (1 - uvRadius.y - (MARGIN_Y * 2));
         }
 
-        uvRadius = pixelsToUV(radius, true) + 1;
-        if(Math.abs(position.x) > 1 - uvRadius - (MARGIN_X*2)) {
+        if(Math.abs(position.x) > 1 - uvRadius.x - (MARGIN_X*2)) {
             velocity.x *= -1 * COLLISION_DAMPENING;
-            position.x = Math.signum(position.x) * (1 - uvRadius - (MARGIN_X*2));
+            position.x = Math.signum(position.x) * (1 - uvRadius.x - (MARGIN_X*2));
         }
     }
-
-
 
     public static Vector2 getWorldBounds(){
         float width = 1 - (Particle.MARGIN_X * 2);
