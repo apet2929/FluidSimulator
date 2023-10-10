@@ -35,7 +35,8 @@ public class Main  extends ApplicationAdapter {
 		particles.get(0).position.x += 0.4;
 		particles.get(1).position.x -= 0.4;
 		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1);
-		boundingBox = new Square();
+
+		boundingBox = new Square(Particle.getWorldBounds());
 	}
 
 	private ShaderProgram loadShader(String name) {
@@ -51,6 +52,7 @@ public class Main  extends ApplicationAdapter {
 	}
 
 	public void update() {
+		boundingBox.size = Particle.getWorldBounds();
 		for (Particle particle : particles) {
 			particle.update();
 		}

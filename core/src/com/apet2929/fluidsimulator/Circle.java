@@ -12,11 +12,8 @@ import com.badlogic.gdx.math.Vector3;
 
 import java.util.ArrayList;
 
-public class Circle implements Renderable {
+public class Circle extends Renderable {
     private static final Mesh CIRCLE_MESH = buildCircleMesh(2000);
-    public Vector3 position;
-    public Vector2 size;
-    public Color color;
 
     public Circle() {
         position = new Vector3(0,0,0);
@@ -30,23 +27,10 @@ public class Circle implements Renderable {
         this.color = color;
     }
 
-    public void render(Matrix4 origin, ShaderProgram shader) {
+    @Override
+    public void render(Matrix4 matrix, ShaderProgram shader) {
         /* NOTE: Assumes shader is already bound */
-        Matrix4 matrix4 = getMatrix(origin);
-        shader.setUniformMatrix("u_projModelView", matrix4);
-        shader.setUniform4fv("u_color", new float[]{color.r, color.g, color.b, color.a}, 0, 4);
-        CIRCLE_MESH.render(shader, GL20.GL_TRIANGLES);
-    }
-
-    private Matrix4 getMatrix(Matrix4 origin) {
-        Matrix4 matrix4 = origin.cpy();
-
-        int maxWidth = Gdx.graphics.getWidth();
-        int maxHeight = Gdx.graphics.getHeight();
-        float percentageWidth = size.x / maxWidth;
-        float percentageHeight = size.y / maxHeight;
-        Vector3 scaling = new Vector3(percentageWidth, percentageHeight, 1);
-        return matrix4.setToTranslationAndScaling(position, scaling);
+        super.render(scaleAndTranslateMatrix(matrix, position, size), shader, CIRCLE_MESH, GL20.GL_TRIANGLES);
     }
 
     private static Mesh buildCircleMesh(int vCount) {

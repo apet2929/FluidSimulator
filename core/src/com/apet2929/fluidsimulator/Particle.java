@@ -7,12 +7,12 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-public class Particle implements Renderable {
-    private static final float GRAVITY = 0.02f;
+public class Particle extends Renderable {
     public static final float MARGIN_X = 0.1f;
     public static final float MARGIN_Y = 0.05f;
-    Vector3 position;
-    Color color;
+    private static final float GRAVITY = 0.02f;
+    private static final float COLLISION_DAMPENING = 0.9f;
+
     Vector2 velocity;
     Circle circle;
     float radius;
@@ -34,20 +34,16 @@ public class Particle implements Renderable {
         radius = 50;
         Vector2 size = new Vector2(radius * 2, radius * 2);
         circle = new Circle(position, size, color);
-
     }
 
     public void update() {
-//        position.x += velocity.x * Gdx.graphics.getDeltaTime();
-//        position.y += velocity.y * Gdx.graphics.getDeltaTime();
-//        velocity.y -= GRAVITY;
-//        resolveCollisions();
-        float uvRadius = pixelsToUV(radius, false) + 1;
-        position.y = -1 * (1 - uvRadius - (MARGIN_Y * 2));
-        uvRadius = pixelsToUV(radius, true) + 1;
-        position.x = -1 * (1 - uvRadius - (MARGIN_X*2));
+        position.x += velocity.x * Gdx.graphics.getDeltaTime();
+        position.y += velocity.y * Gdx.graphics.getDeltaTime();
+        velocity.y -= GRAVITY;
+        resolveCollisions();
     }
 
+    @Override
     public void render(Matrix4 matrix, ShaderProgram shader) {
         circle.render(matrix, shader);
     }
@@ -55,13 +51,13 @@ public class Particle implements Renderable {
     private void resolveCollisions() {
         float uvRadius = pixelsToUV(radius, false) + 1;
         if(Math.abs(position.y) > 1 - uvRadius - (MARGIN_Y * 2)) {
-            velocity.y *= -1;
+            velocity.y *= -1 * COLLISION_DAMPENING;
             position.y = Math.signum(position.y) * (1 - uvRadius - (MARGIN_Y * 2));
         }
 
         uvRadius = pixelsToUV(radius, true) + 1;
         if(Math.abs(position.x) > 1 - uvRadius - (MARGIN_X*2)) {
-            velocity.x *= -1;
+            velocity.x *= -1 * COLLISION_DAMPENING;
             position.x = Math.signum(position.x) * (1 - uvRadius - (MARGIN_X*2));
         }
     }
@@ -78,5 +74,13 @@ public class Particle implements Renderable {
         float uvNorm = (uv + 1) / 2;
         if(widthRelative) return uvNorm * Gdx.graphics.getWidth();
         return uvNorm * Gdx.graphics.getHeight();
+    }
+
+    public static Vector2 getWorldBounds(){
+        float width = 1 - (Particle.MARGIN_X * 2);
+        float height = 1 - (Particle.MARGIN_Y * 2);
+        width *= Gdx.graphics.getWidth();
+        height *= Gdx.graphics.getHeight();
+        return new Vector2(width, height);
     }
 }

@@ -10,11 +10,8 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-public class Square implements Renderable {
+public class Square extends Renderable {
     private static final Mesh SQUARE_MESH = getSquareMesh();
-    private Vector2 size;
-    private Vector3 position;
-    private Color color;
 
     public Square() {
         color = Color.FOREST;
@@ -22,23 +19,15 @@ public class Square implements Renderable {
         position = new Vector3(0,0,0);
     }
 
-    @Override
-    public void render(Matrix4 matrix, ShaderProgram shader) {
-        Matrix4 matrix4 = getMatrix(matrix);
-        shader.setUniformMatrix("u_projModelView", matrix4);
-        shader.setUniform4fv("u_color", new float[]{color.r, color.g, color.b, color.a}, 0, 4);
-        SQUARE_MESH.render(shader, GL20.GL_LINES);
+    public Square(Vector2 size) {
+        this.size = size;
+        color = Color.FOREST;
+        position = new Vector3(0,0,0);
     }
 
-    private Matrix4 getMatrix(Matrix4 origin) {
-        Matrix4 matrix4 = origin.cpy();
-
-        int maxWidth = Gdx.graphics.getWidth();
-        int maxHeight = Gdx.graphics.getHeight();
-        float percentageWidth = size.x / maxWidth;
-        float percentageHeight = size.y / maxHeight;
-        Vector3 scaling = new Vector3(percentageWidth, percentageHeight, 1);
-        return matrix4.setToTranslationAndScaling(position, scaling);
+    @Override
+    public void render(Matrix4 matrix, ShaderProgram shader) {
+        super.render(scaleAndTranslateMatrix(matrix, position, size), shader, SQUARE_MESH, GL20.GL_LINES);
     }
 
     private static Mesh getSquareMesh(){
