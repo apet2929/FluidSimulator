@@ -12,9 +12,12 @@ import java.util.ArrayList;
 
 public class Main  extends ApplicationAdapter {
 	private static final float SCALE = 1f;
+	private static final int NUM_PARTICLES = 200;
+	private static final float PARTICLE_SPACING = 20;
 	SpriteBatch sb;
 	ShaderProgram basicShader;
 	ArrayList<Particle> particles;
+	Simulator simulator;
 	Square boundingBox;
 
 	ShapeRenderer sr;
@@ -25,14 +28,14 @@ public class Main  extends ApplicationAdapter {
 		sr = new ShapeRenderer();
 		basicShader = loadShader("shader");
 		particles = new ArrayList<>();
-		spawnParticles(20);
+		simulator = new Simulator(particles);
+		spawnParticles(NUM_PARTICLES);
 		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1); // IMPORTANT: DONT REMOVE
-
 		boundingBox = new Square(Particle.getWorldBounds());
 	}
 
 	private void spawnParticles(int numParticles) {
-		float particleSpacing = 10;
+		float particleSpacing = PARTICLE_SPACING;
 		float particleSize = Particle.PARTICLE_RADIUS;
 		int particlesPerRow = (int) Math.sqrt(numParticles);
 		int particlesPerCol = (numParticles - 1) / particlesPerRow + 1;
@@ -59,6 +62,9 @@ public class Main  extends ApplicationAdapter {
 	}
 
 	public void update() {
+		float smoothingRadius = 0.2f;
+		simulator.update(smoothingRadius);
+
 		boundingBox.size = Particle.getWorldBounds();
 		for (Particle particle : particles) {
 			particle.update();

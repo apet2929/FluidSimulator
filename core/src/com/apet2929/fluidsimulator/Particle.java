@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Particle extends Renderable {
     public static final float MARGIN_X = 0.1f;
     public static final float MARGIN_Y = 0.05f;
-    public static float PARTICLE_RADIUS = 25;
+    public static float PARTICLE_RADIUS = 5;
     private static final float GRAVITY = 0.02f;
     private static final float COLLISION_DAMPENING = 0.9f;
 
@@ -43,7 +43,7 @@ public class Particle extends Renderable {
     public void update() {
         position.x += velocity.x * Gdx.graphics.getDeltaTime();
         position.y += velocity.y * Gdx.graphics.getDeltaTime();
-        velocity.y -= GRAVITY;
+//        velocity.y -= GRAVITY;
         resolveCollisions();
     }
 
@@ -72,5 +72,9 @@ public class Particle extends Renderable {
         width *= Gdx.graphics.getWidth();
         height *= Gdx.graphics.getHeight();
         return new Vector2(width, height);
+    }
+
+    public Vector2 getPosition(){
+        return new Vector2(position.x, position.y);
     }
 }
