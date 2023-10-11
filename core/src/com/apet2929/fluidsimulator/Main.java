@@ -2,6 +2,8 @@ package com.apet2929.fluidsimulator;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,10 +12,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
 
-public class Main  extends ApplicationAdapter {
-	private static final float SCALE = 1f;
-	private static final int NUM_PARTICLES = 200;
-	private static final float PARTICLE_SPACING = 20;
+import com.apet2929.fluidsimulator.Settings.*;
+
+import static com.apet2929.fluidsimulator.Settings.*;
+
+public class Main  extends ApplicationAdapter implements InputProcessor {
+
 	SpriteBatch sb;
 	ShaderProgram basicShader;
 	ArrayList<Particle> particles;
@@ -29,14 +33,15 @@ public class Main  extends ApplicationAdapter {
 		basicShader = loadShader("shader");
 		particles = new ArrayList<>();
 		simulator = new Simulator(particles);
-		spawnParticles(NUM_PARTICLES);
+		spawnParticles(Settings.NUM_PARTICLES);
 		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1); // IMPORTANT: DONT REMOVE
 		boundingBox = new Square(Particle.getWorldBounds());
+		Gdx.input.setInputProcessor(this);
 	}
 
 	private void spawnParticles(int numParticles) {
 		float particleSpacing = PARTICLE_SPACING;
-		float particleSize = Particle.PARTICLE_RADIUS;
+		float particleSize = Settings.PARTICLE_RADIUS;
 		int particlesPerRow = (int) Math.sqrt(numParticles);
 		int particlesPerCol = (numParticles - 1) / particlesPerRow + 1;
 		float spacing = particleSize * 2 + particleSpacing;
@@ -62,7 +67,7 @@ public class Main  extends ApplicationAdapter {
 	}
 
 	public void update() {
-		float smoothingRadius = 1f;
+		float smoothingRadius = 0.2f;
 		simulator.update(smoothingRadius);
 
 		boundingBox.size = Particle.getWorldBounds();
@@ -86,5 +91,63 @@ public class Main  extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		super.dispose();
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		if (button != Input.Buttons.LEFT || pointer > 0) return false;
+		System.out.println("yee");
+		particles.add(new Particle(new Vector2(screenX, Gdx.graphics.getHeight() - screenY)));
+		particles.add(new Particle(new Vector2(screenX + PARTICLE_RADIUS + PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY)));
+		particles.add(new Particle(new Vector2(screenX - PARTICLE_RADIUS - PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY)));
+		particles.add(new Particle(new Vector2(screenX, Gdx.graphics.getHeight() - screenY + PARTICLE_SPACING + PARTICLE_RADIUS)));
+		particles.add(new Particle(new Vector2(screenX, Gdx.graphics.getHeight() - screenY - PARTICLE_SPACING - PARTICLE_RADIUS)));
+		particles.add(new Particle(new Vector2(screenX + PARTICLE_RADIUS + PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY + PARTICLE_SPACING + PARTICLE_RADIUS)));
+		particles.add(new Particle(new Vector2(screenX + PARTICLE_RADIUS + PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY - PARTICLE_SPACING - PARTICLE_RADIUS)));
+		particles.add(new Particle(new Vector2(screenX - PARTICLE_RADIUS - PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY + PARTICLE_SPACING + PARTICLE_RADIUS)));
+		particles.add(new Particle(new Vector2(screenX - PARTICLE_RADIUS - PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY - PARTICLE_SPACING - PARTICLE_RADIUS)));
+
+		return true;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(float amountX, float amountY) {
+		return false;
 	}
 }

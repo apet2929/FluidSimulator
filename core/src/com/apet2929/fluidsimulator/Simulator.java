@@ -4,13 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+
+import static com.apet2929.fluidsimulator.Settings.*;
+
 
 public class Simulator {
-    private static final float TARGET_DENSITY = 40f;
-    private static final float PRESSURE_MULTIPLIER = 0.2f;
-    private static final float MASS = 1f;
+
 
     public ArrayList<Particle> particles;
     public ArrayList<Float> densities;
@@ -22,14 +21,21 @@ public class Simulator {
     public void update(float smoothingRadius) {
         updateDensities(smoothingRadius);
 
-        System.out.println("Max density = " + densities.stream().max((o1, o2) -> o1 > o2 ? 1 : -1).get());
+//        float maxDensity = -1;
+//        for (float val :
+//                densities) {
+//            if(val > maxDensity) maxDensity = val;
+//        }
+//        System.out.println("Max density = " + maxDensity);
 
         for(int i = 0; i < particles.size(); i++) {
             Particle particle = particles.get(i);
             Vector2 pressureForce = calculatePressureForce(particle.getPosition(), smoothingRadius);
             Vector2 pressureAcceleration = pressureForce.cpy().scl(densities.get(i)).scl(1f/Gdx.graphics.getWidth(), 1f/Gdx.graphics.getHeight());
             Vector2 vel = pressureAcceleration.scl(0.1f);
-            particle.velocity = vel;
+//            particle.velocity = vel;
+            particle.velocity.x = (particle.velocity.x + vel.x) / 2f;
+            particle.velocity.y = (particle.velocity.y + vel.y) / 2f;
         }
     }
 

@@ -7,13 +7,11 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-public class Particle extends Renderable {
-    public static final float MARGIN_X = 0.1f;
-    public static final float MARGIN_Y = 0.05f;
-    public static float PARTICLE_RADIUS = 5;
-    private static final float GRAVITY = 0.02f;
-    private static final float COLLISION_DAMPENING = 0.9f;
+import static com.apet2929.fluidsimulator.Settings.*;
 
+public class Particle extends Renderable {
+
+    Vector3 lastPos;
     Vector2 velocity;
     Circle circle;
 
@@ -41,15 +39,26 @@ public class Particle extends Renderable {
     }
 
     public void update() {
+        lastPos = position.cpy();
         position.x += velocity.x * Gdx.graphics.getDeltaTime();
         position.y += velocity.y * Gdx.graphics.getDeltaTime();
-//        velocity.y -= GRAVITY;
+        velocity.y -= GRAVITY;
         resolveCollisions();
     }
 
     @Override
     public void render(Matrix4 matrix, ShaderProgram shader) {
+        circle.color = getColorByVelocity();
         circle.render(matrix, shader);
+    }
+
+    public Color getColorByVelocity(){
+        float velMag = lastPos.sub(position).scl(1/Gdx.graphics.getDeltaTime()).len();
+
+        Vector3 red = new Vector3(1,0,0);
+        Vector3 blue = new Vector3(0,0,1);
+        Vector3 c = blue.lerp(red, velMag / MAX_VEL_FOR_COLOR);
+        return new Color(c.x, c.y, c.z, 1);
     }
 
     private void resolveCollisions() {
@@ -67,8 +76,8 @@ public class Particle extends Renderable {
     }
 
     public static Vector2 getWorldBounds(){
-        float width = 1 - (Particle.MARGIN_X * 2);
-        float height = 1 - (Particle.MARGIN_Y * 2);
+        float width = 1 - (MARGIN_X * 2);
+        float height = 1 - (MARGIN_Y * 2);
         width *= Gdx.graphics.getWidth();
         height *= Gdx.graphics.getHeight();
         return new Vector2(width, height);
