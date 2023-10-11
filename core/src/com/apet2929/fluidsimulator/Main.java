@@ -62,7 +62,7 @@ public class Main  extends ApplicationAdapter {
 	}
 
 	public void update() {
-		float smoothingRadius = 0.2f;
+		float smoothingRadius = 1f;
 		simulator.update(smoothingRadius);
 
 		boundingBox.size = Particle.getWorldBounds();
