@@ -22,6 +22,7 @@ public class Particle extends Renderable {
     public Particle(Vector2 position) {
         velocity = new Vector2(0,0);
         this.position = new Vector3(Renderable.pixelsToUV(position.x, position.y), 0);
+        lastPos = this.position.cpy();
         this.color = Color.BLUE;
 
         Vector2 size = new Vector2(PARTICLE_RADIUS * 2, PARTICLE_RADIUS * 2);
@@ -42,7 +43,7 @@ public class Particle extends Renderable {
         lastPos = position.cpy();
         position.x += velocity.x * Gdx.graphics.getDeltaTime();
         position.y += velocity.y * Gdx.graphics.getDeltaTime();
-        velocity.y -= GRAVITY;
+//        velocity.y -= GRAVITY;
         resolveCollisions();
     }
 

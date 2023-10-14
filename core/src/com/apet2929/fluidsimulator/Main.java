@@ -11,12 +11,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 import com.apet2929.fluidsimulator.Settings.*;
 
 import static com.apet2929.fluidsimulator.Settings.*;
 
-public class Main  extends ApplicationAdapter implements InputProcessor {
+public class Main  extends ApplicationAdapter {
 
 	SpriteBatch sb;
 	ShaderProgram basicShader;
@@ -25,6 +27,8 @@ public class Main  extends ApplicationAdapter implements InputProcessor {
 	Square boundingBox;
 
 	ShapeRenderer sr;
+	boolean startup;
+	UI ui;
 
 	@Override
 	public void create() {
@@ -36,7 +40,14 @@ public class Main  extends ApplicationAdapter implements InputProcessor {
 		spawnParticles(Settings.NUM_PARTICLES);
 		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1); // IMPORTANT: DONT REMOVE
 		boundingBox = new Square(Particle.getWorldBounds());
-		Gdx.input.setInputProcessor(this);
+		startup = true;
+		ui = new UI(this::onScreenClick);
+		ui.create();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		ui.resize(width, height);
 	}
 
 	private void spawnParticles(int numParticles) {
@@ -67,6 +78,12 @@ public class Main  extends ApplicationAdapter implements InputProcessor {
 	}
 
 	public void update() {
+		if(startup) {
+			startup = !startup;
+			return;
+		}
+
+
 		float smoothingRadius = 0.2f;
 		simulator.update(smoothingRadius);
 
@@ -86,32 +103,10 @@ public class Main  extends ApplicationAdapter implements InputProcessor {
 			particle.render(sb.getProjectionMatrix(), basicShader);
 		}
 		boundingBox.render(sb.getProjectionMatrix(), basicShader);
+		ui.render();
 	}
 
-	@Override
-	public void dispose() {
-		super.dispose();
-	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (button != Input.Buttons.LEFT || pointer > 0) return false;
-		System.out.println("yee");
+	private void onScreenClick(int screenX, int screenY) {
 		particles.add(new Particle(new Vector2(screenX, Gdx.graphics.getHeight() - screenY)));
 		particles.add(new Particle(new Vector2(screenX + PARTICLE_RADIUS + PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY)));
 		particles.add(new Particle(new Vector2(screenX - PARTICLE_RADIUS - PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY)));
@@ -122,32 +117,10 @@ public class Main  extends ApplicationAdapter implements InputProcessor {
 		particles.add(new Particle(new Vector2(screenX - PARTICLE_RADIUS - PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY + PARTICLE_SPACING + PARTICLE_RADIUS)));
 		particles.add(new Particle(new Vector2(screenX - PARTICLE_RADIUS - PARTICLE_SPACING, Gdx.graphics.getHeight() - screenY - PARTICLE_SPACING - PARTICLE_RADIUS)));
 
-		return true;
 	}
 
 	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		return false;
-	}
-
-	@Override
-	public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(float amountX, float amountY) {
-		return false;
+	public void dispose() {
+		ui.dispose();
 	}
 }
