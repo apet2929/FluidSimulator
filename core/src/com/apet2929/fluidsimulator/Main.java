@@ -28,7 +28,7 @@ public class Main  extends ApplicationAdapter {
 
 	ShapeRenderer sr;
 	boolean startup;
-	UI ui;
+
 
 	@Override
 	public void create() {
@@ -41,13 +41,6 @@ public class Main  extends ApplicationAdapter {
 		sb.getProjectionMatrix().setToScaling(SCALE,SCALE,1); // IMPORTANT: DONT REMOVE
 		boundingBox = new Square(Particle.getWorldBounds());
 		startup = true;
-		ui = new UI(this::onScreenClick);
-		ui.create();
-	}
-
-	@Override
-	public void resize(int width, int height) {
-		ui.resize(width, height);
 	}
 
 	private void spawnParticles(int numParticles) {
@@ -103,7 +96,6 @@ public class Main  extends ApplicationAdapter {
 			particle.render(sb.getProjectionMatrix(), basicShader);
 		}
 		boundingBox.render(sb.getProjectionMatrix(), basicShader);
-		ui.render();
 	}
 
 	private void onScreenClick(int screenX, int screenY) {
@@ -121,6 +113,5 @@ public class Main  extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
-		ui.dispose();
 	}
 }
